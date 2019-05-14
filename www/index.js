@@ -1,3 +1,4 @@
-import * as wasm from "hello-wasm-pack";
+import * as wasm from "hinoki-wasm";
 
-wasm.greet();
+wasm.greet("me");
+wasm.drawSomething();
