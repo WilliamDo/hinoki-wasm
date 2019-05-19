@@ -1,6 +1,7 @@
 mod utils;
 
 use std::f64;
+use std::cmp;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
 
@@ -65,27 +66,18 @@ fn draw_tree(context: web_sys::CanvasRenderingContext2d, levels: u32) {
 
 }
 
-/*
-        function drawTree(ctx, levels) {
-            var playerBoxHeight = 40;
-            var playerBoxWidth = 120;
-            var playerBoxGap = 20;
+pub enum TournamentTree {
+    Empty,
+    Node { left: Box<TournamentTree>, right: Box<TournamentTree> },
+}
 
-            for (var i = 0; i < levels; i++) {
-                var numberNodes = Math.pow(2, levels - i - 1);
-                var offset = Math.pow(2, i) * (playerBoxHeight + playerBoxGap);
-                var horizontalBias = (i + 1) * playerBoxGap + i * playerBoxWidth;
-
-                for (var nodeIdx = 0; nodeIdx < numberNodes; nodeIdx++) {                    
-                    var verticalBias = ((Math.pow(2, i) - 1) * (playerBoxGap + playerBoxHeight)) / 2;
-                    ctx.strokeRect(
-                        horizontalBias,
-                        nodeIdx * offset + verticalBias,
-                        playerBoxWidth,
-                        playerBoxHeight
-                    );
-                }
-
-            }
-        }
-*/
+pub fn depth_of_tree(root: &TournamentTree) -> u32 {
+    match root {
+        TournamentTree::Empty => 0,
+        TournamentTree::Node { left, right } => {
+            let depth_left = depth_of_tree(&*left);
+            let depth_right = depth_of_tree(&*right);
+            1 + cmp::max(depth_left, depth_right)
+        },
+    }
+}
