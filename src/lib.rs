@@ -22,9 +22,9 @@ pub fn greet(name: &str) {
 }
 
 #[wasm_bindgen]
-pub fn draw_something() {
+pub fn draw_something(canvas_id: &str) {
     let document = web_sys::window().unwrap().document().unwrap();
-    let canvas = document.get_element_by_id("tournament-tree-canvas").unwrap();
+    let canvas = document.get_element_by_id(canvas_id).unwrap();
     let canvas: web_sys::HtmlCanvasElement = canvas
         .dyn_into::<web_sys::HtmlCanvasElement>()
         .map_err(|_| ())
