@@ -46,23 +46,51 @@ pub fn draw_something(canvas_id: &str) {
         left: Box::new(TournamentTree::Node {
             left: Box::new(TournamentTree::Node {
                 left: Box::new(TournamentTree::Empty),
-                right: Box::new(TournamentTree::Empty),            
+                right: Box::new(TournamentTree::Empty),
+                tournament_match: TournamentMatch {
+                    player_1: "Timo Boll".to_string(),
+                    player_2: "Jun Mizutani".to_string(),
+                },         
             }),
             right: Box::new(TournamentTree::Node {
                 left: Box::new(TournamentTree::Empty),
                 right: Box::new(TournamentTree::Empty),            
-            }),          
+                tournament_match: TournamentMatch {
+                    player_1: "Zhang Jike".to_string(),
+                    player_2: "Ma Lin".to_string(),
+                },         
+            }),
+            tournament_match: TournamentMatch {
+                player_1: "Timo Boll".to_string(),
+                player_2: "Zhang Jike".to_string(),
+            },                   
         }),
         right: Box::new(TournamentTree::Node {
             left: Box::new(TournamentTree::Node {
                 left: Box::new(TournamentTree::Empty),
-                right: Box::new(TournamentTree::Empty),            
+                right: Box::new(TournamentTree::Empty),
+                tournament_match: TournamentMatch {
+                    player_1: "Koki Niwa".to_string(),
+                    player_2: "Xu Xin".to_string(),
+                },         
             }),
             right: Box::new(TournamentTree::Node {
                 left: Box::new(TournamentTree::Empty),
-                right: Box::new(TournamentTree::Empty),            
-            }),            
+                right: Box::new(TournamentTree::Empty),
+                tournament_match: TournamentMatch {
+                    player_1: "Simon Gauzy".to_string(),
+                    player_2: "Ma Long".to_string(),
+                },                     
+            }),
+            tournament_match: TournamentMatch {
+                player_1: "Koki Niwa".to_string(),
+                player_2: "Ma Long".to_string(),
+            },                     
         }),
+        tournament_match: TournamentMatch {
+            player_1: "Timo Boll".to_string(),
+            player_2: "Ma Long".to_string(),
+        },         
     };
 
     let boundary_height = depth_of_tree(&tournament_tree) * base_height;
@@ -96,15 +124,25 @@ fn draw_tree(context: web_sys::CanvasRenderingContext2d, levels: u32) {
 
 }
 
+#[derive(Clone, Default)]
+pub struct TournamentMatch {
+    player_1: String,
+    player_2: String,
+}
+
 pub enum TournamentTree {
     Empty,
-    Node { left: Box<TournamentTree>, right: Box<TournamentTree> },
+    Node { 
+        left: Box<TournamentTree>, 
+        right: Box<TournamentTree>,
+        tournament_match: TournamentMatch,
+    },
 }
 
 pub fn depth_of_tree(root: &TournamentTree) -> u32 {
     match root {
         TournamentTree::Empty => 0,
-        TournamentTree::Node { left, right } => {
+        TournamentTree::Node { left, right, tournament_match: _ } => {
             let depth_left = depth_of_tree(&*left);
             let depth_right = depth_of_tree(&*right);
             1 + cmp::max(depth_left, depth_right)
@@ -118,13 +156,21 @@ pub fn tree_boundary_height(base_height: u32, tree_depth: u32) -> u32 {
 
 pub enum RenderingTree {
     Empty,
-    Node { left: Box<RenderingTree>, right: Box<RenderingTree>, y_top: u32, y_bottom: u32, x_left: u32, width: u32 },
+    Node { 
+        left: Box<RenderingTree>, 
+        right: Box<RenderingTree>, 
+        y_top: u32, 
+        y_bottom: u32, 
+        x_left: u32, 
+        width: u32, 
+        tournament_match: TournamentMatch,
+    },
 }
 
 fn to_rendering_tree(root: &TournamentTree, y_top: u32, y_bottom: u32, x_left: u32, width: u32) -> RenderingTree {
     match root {
         TournamentTree::Empty => RenderingTree::Empty,
-        TournamentTree::Node { left, right } => {
+        TournamentTree::Node { left, right, tournament_match } => {
             RenderingTree::Node {
                 left: Box::new(to_rendering_tree(left, y_top, (y_top + y_bottom) / 2, x_left + width, width)),
                 right: Box::new(to_rendering_tree(right, (y_top + y_bottom) / 2, y_bottom, x_left + width, width)),
@@ -132,6 +178,7 @@ fn to_rendering_tree(root: &TournamentTree, y_top: u32, y_bottom: u32, x_left: u
                 y_bottom: y_bottom,
                 x_left: x_left,
                 width: width,
+                tournament_match: tournament_match.clone(),
             }
         }
     }
@@ -141,7 +188,7 @@ fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d
 
     match root {
         RenderingTree::Empty => {},
-        RenderingTree::Node { left, right, y_top, y_bottom, x_left, width } => {
+        RenderingTree::Node { left, right, y_top, y_bottom, x_left, width, tournament_match } => {
             // context.stroke_rect(*x_left as f64, *y_top as f64, *width as f64, (y_bottom - y_top) as f64);
 
             // todo pass in the height and width from elsewhere
@@ -152,6 +199,9 @@ fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d
             let x_center = x_left + width / 2;
 
             context.stroke_rect((x_center - container_width / 2).into(), (y_center - container_height / 2).into(), container_width.into(), container_height.into());
+
+            context.fill_text(&tournament_match.player_1, x_center.into(), y_center.into());
+            context.fill_text(&tournament_match.player_2, x_center.into(), (y_center + 10).into());
 
             render_tree(left, context);
             render_tree(right, context);

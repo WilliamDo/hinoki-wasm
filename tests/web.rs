@@ -28,7 +28,8 @@ fn depth_of_empty_tree() {
 fn depth_of_single_node_tree() {
     let root = TournamentTree::Node { 
         left: Box::new(TournamentTree::Empty), 
-        right: Box::new(TournamentTree::Empty) 
+        right: Box::new(TournamentTree::Empty),
+        tournament_match: Default::default(),
     };
     let depth = depth_of_tree(&root);
     assert_eq!(depth, 1);
@@ -40,8 +41,10 @@ fn depth_of_bigger_tree() {
         left: Box::new(TournamentTree::Node {
             left: Box::new(TournamentTree::Empty),
             right: Box::new(TournamentTree::Empty),
+            tournament_match: Default::default(),
         }), 
-        right: Box::new(TournamentTree::Empty) 
+        right: Box::new(TournamentTree::Empty),
+        tournament_match: Default::default(),
     };
     let depth = depth_of_tree(&root);
     assert_eq!(depth, 2);
