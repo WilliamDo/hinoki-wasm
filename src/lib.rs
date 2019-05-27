@@ -39,8 +39,10 @@ pub fn draw_something(canvas_id: &str) {
 
     // draw_tree(context, 4);
 
+    let base_width = 200;
+    let base_height = 100;
 
-    let rendering_tree = to_rendering_tree(&TournamentTree::Node {
+    let tournament_tree = &TournamentTree::Node {
         left: Box::new(TournamentTree::Node {
             left: Box::new(TournamentTree::Empty),
             right: Box::new(TournamentTree::Empty),            
@@ -52,7 +54,10 @@ pub fn draw_something(canvas_id: &str) {
             }),
             right: Box::new(TournamentTree::Empty),            
         }),
-    }, 0, 500, 0, 100);
+    };
+
+    let boundary_height = depth_of_tree(&tournament_tree) * base_height;
+    let rendering_tree = to_rendering_tree(&tournament_tree, 0, boundary_height, 0, base_width);
     render_tree(&rendering_tree, &context);
 
 }
