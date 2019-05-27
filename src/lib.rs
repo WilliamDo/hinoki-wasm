@@ -37,7 +37,23 @@ pub fn draw_something(canvas_id: &str) {
         .dyn_into::<web_sys::CanvasRenderingContext2d>()
         .unwrap();
 
-    draw_tree(context, 4);
+    // draw_tree(context, 4);
+
+
+    let rendering_tree = to_rendering_tree(&TournamentTree::Node {
+        left: Box::new(TournamentTree::Node {
+            left: Box::new(TournamentTree::Empty),
+            right: Box::new(TournamentTree::Empty),            
+        }),
+        right: Box::new(TournamentTree::Node {
+            left: Box::new(TournamentTree::Node {
+                left: Box::new(TournamentTree::Empty),
+                right: Box::new(TournamentTree::Empty),            
+            }),
+            right: Box::new(TournamentTree::Empty),            
+        }),
+    }, 0, 500, 0, 50);
+    render_tree(&rendering_tree, &context);
 
 }
 
@@ -84,4 +100,38 @@ pub fn depth_of_tree(root: &TournamentTree) -> u32 {
 
 pub fn tree_boundary_height(base_height: u32, tree_depth: u32) -> u32 {
     2u32.pow(tree_depth - 1) * base_height
+}
+
+pub enum RenderingTree {
+    Empty,
+    Node { left: Box<RenderingTree>, right: Box<RenderingTree>, top: u32, bottom: u32, edge: u32, gap: u32 },
+}
+
+pub fn to_rendering_tree(root: &TournamentTree, top: u32, bottom: u32, edge: u32, gap: u32) -> RenderingTree {
+    match root {
+        TournamentTree::Empty => RenderingTree::Empty,
+        TournamentTree::Node { left, right } => {
+            RenderingTree::Node {
+                left: Box::new(to_rendering_tree(left, top, (top + bottom) / 2, edge + gap, gap)),
+                right: Box::new(to_rendering_tree(right, (top + bottom) / 2, bottom, edge + gap, gap)),
+                top: top,
+                bottom: bottom,
+                edge: edge,
+                gap: gap,
+            }
+        }
+    }
+}
+
+pub fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d) {
+
+    match root {
+        RenderingTree::Empty => {},
+        RenderingTree::Node { left, right, top, bottom, edge, gap } => {
+            context.stroke_rect(*edge as f64, *top as f64, *gap as f64, (bottom - top) as f64);
+            render_tree(left, context);
+            render_tree(right, context);
+        }
+    }
+
 }
