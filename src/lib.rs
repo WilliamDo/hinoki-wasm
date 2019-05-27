@@ -52,7 +52,7 @@ pub fn draw_something(canvas_id: &str) {
             }),
             right: Box::new(TournamentTree::Empty),            
         }),
-    }, 0, 500, 0, 50);
+    }, 0, 500, 0, 100);
     render_tree(&rendering_tree, &context);
 
 }
@@ -104,20 +104,20 @@ pub fn tree_boundary_height(base_height: u32, tree_depth: u32) -> u32 {
 
 pub enum RenderingTree {
     Empty,
-    Node { left: Box<RenderingTree>, right: Box<RenderingTree>, top: u32, bottom: u32, edge: u32, gap: u32 },
+    Node { left: Box<RenderingTree>, right: Box<RenderingTree>, y_top: u32, y_bottom: u32, x_left: u32, width: u32 },
 }
 
-pub fn to_rendering_tree(root: &TournamentTree, top: u32, bottom: u32, edge: u32, gap: u32) -> RenderingTree {
+pub fn to_rendering_tree(root: &TournamentTree, y_top: u32, y_bottom: u32, x_left: u32, width: u32) -> RenderingTree {
     match root {
         TournamentTree::Empty => RenderingTree::Empty,
         TournamentTree::Node { left, right } => {
             RenderingTree::Node {
-                left: Box::new(to_rendering_tree(left, top, (top + bottom) / 2, edge + gap, gap)),
-                right: Box::new(to_rendering_tree(right, (top + bottom) / 2, bottom, edge + gap, gap)),
-                top: top,
-                bottom: bottom,
-                edge: edge,
-                gap: gap,
+                left: Box::new(to_rendering_tree(left, y_top, (y_top + y_bottom) / 2, x_left + width, width)),
+                right: Box::new(to_rendering_tree(right, (y_top + y_bottom) / 2, y_bottom, x_left + width, width)),
+                y_top: y_top,
+                y_bottom: y_bottom,
+                x_left: x_left,
+                width: width,
             }
         }
     }
@@ -127,8 +127,8 @@ pub fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingConte
 
     match root {
         RenderingTree::Empty => {},
-        RenderingTree::Node { left, right, top, bottom, edge, gap } => {
-            context.stroke_rect(*edge as f64, *top as f64, *gap as f64, (bottom - top) as f64);
+        RenderingTree::Node { left, right, y_top, y_bottom, x_left, width } => {
+            context.stroke_rect(*x_left as f64, *y_top as f64, *width as f64, (y_bottom - y_top) as f64);
             render_tree(left, context);
             render_tree(right, context);
         }
