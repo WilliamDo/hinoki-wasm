@@ -112,7 +112,7 @@ pub enum RenderingTree {
     Node { left: Box<RenderingTree>, right: Box<RenderingTree>, y_top: u32, y_bottom: u32, x_left: u32, width: u32 },
 }
 
-pub fn to_rendering_tree(root: &TournamentTree, y_top: u32, y_bottom: u32, x_left: u32, width: u32) -> RenderingTree {
+fn to_rendering_tree(root: &TournamentTree, y_top: u32, y_bottom: u32, x_left: u32, width: u32) -> RenderingTree {
     match root {
         TournamentTree::Empty => RenderingTree::Empty,
         TournamentTree::Node { left, right } => {
@@ -128,7 +128,7 @@ pub fn to_rendering_tree(root: &TournamentTree, y_top: u32, y_bottom: u32, x_lef
     }
 }
 
-pub fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d) {
+fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d) {
 
     match root {
         RenderingTree::Empty => {},
