@@ -44,15 +44,24 @@ pub fn draw_something(canvas_id: &str) {
 
     let tournament_tree = &TournamentTree::Node {
         left: Box::new(TournamentTree::Node {
-            left: Box::new(TournamentTree::Empty),
-            right: Box::new(TournamentTree::Empty),            
+            left: Box::new(TournamentTree::Node {
+                left: Box::new(TournamentTree::Empty),
+                right: Box::new(TournamentTree::Empty),            
+            }),
+            right: Box::new(TournamentTree::Node {
+                left: Box::new(TournamentTree::Empty),
+                right: Box::new(TournamentTree::Empty),            
+            }),          
         }),
         right: Box::new(TournamentTree::Node {
             left: Box::new(TournamentTree::Node {
                 left: Box::new(TournamentTree::Empty),
                 right: Box::new(TournamentTree::Empty),            
             }),
-            right: Box::new(TournamentTree::Empty),            
+            right: Box::new(TournamentTree::Node {
+                left: Box::new(TournamentTree::Empty),
+                right: Box::new(TournamentTree::Empty),            
+            }),            
         }),
     };
 
@@ -133,7 +142,17 @@ fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d
     match root {
         RenderingTree::Empty => {},
         RenderingTree::Node { left, right, y_top, y_bottom, x_left, width } => {
-            context.stroke_rect(*x_left as f64, *y_top as f64, *width as f64, (y_bottom - y_top) as f64);
+            // context.stroke_rect(*x_left as f64, *y_top as f64, *width as f64, (y_bottom - y_top) as f64);
+
+            // todo pass in the height and width from elsewhere
+            let container_height = 60;
+            let container_width = 80;
+
+            let y_center = (y_top + y_bottom) / 2;
+            let x_center = x_left + width / 2;
+
+            context.stroke_rect((x_center - container_width / 2).into(), (y_center - container_height / 2).into(), container_width.into(), container_height.into());
+
             render_tree(left, context);
             render_tree(right, context);
         }
