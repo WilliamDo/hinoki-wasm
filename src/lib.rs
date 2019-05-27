@@ -81,3 +81,7 @@ pub fn depth_of_tree(root: &TournamentTree) -> u32 {
         },
     }
 }
+
+pub fn tree_boundary_height(base_height: u32, tree_depth: u32) -> u32 {
+    2u32.pow(tree_depth - 1) * base_height
+}

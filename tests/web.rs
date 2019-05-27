@@ -8,6 +8,7 @@ use wasm_bindgen_test::*;
 extern crate hinoki_wasm;
 use hinoki_wasm::TournamentTree;
 use hinoki_wasm::depth_of_tree;
+use hinoki_wasm::tree_boundary_height;
 
 wasm_bindgen_test_configure!(run_in_browser);
 
@@ -44,4 +45,16 @@ fn depth_of_bigger_tree() {
     };
     let depth = depth_of_tree(&root);
     assert_eq!(depth, 2);
+}
+
+#[wasm_bindgen_test]
+fn tree_boundary_height_single() {
+    let height = tree_boundary_height(10, 1);
+    assert_eq!(height, 10) 
+}
+
+#[wasm_bindgen_test]
+fn tree_boundary_height_double() {
+    let height = tree_boundary_height(10, 2);
+    assert_eq!(height, 20) 
 }
