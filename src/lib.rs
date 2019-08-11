@@ -195,7 +195,7 @@ fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d
     match root {
         RenderingTree::Empty => {},
         RenderingTree::Node { left, right, y_top, y_bottom, x_left, width, tournament_match } => {
-            // context.stroke_rect(*x_left as f64, *y_top as f64, *width as f64, (y_bottom - y_top) as f64);
+            context.stroke_rect(*x_left as f64, *y_top as f64, *width as f64, (y_bottom - y_top) as f64);
 
             // todo pass in the height and width from elsewhere
             let container_height = 60;
@@ -204,13 +204,13 @@ fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d
             let y_center = (y_top + y_bottom) / 2;
             let x_center = x_left + width / 2;
 
-            context.stroke_rect((x_center - container_width / 2).into(), (y_center - container_height / 2).into(), container_width.into(), container_height.into());
+            //context.stroke_rect((x_center - container_width / 2).into(), (y_center - container_height / 2).into(), container_width.into(), container_height.into());
 
             context.set_text_align("center");
             context.set_text_baseline("middle");
 
-            context.fill_text(&tournament_match.player_1, x_center.into(), (y_center - 10).into());
-            context.fill_text(&tournament_match.player_2, x_center.into(), (y_center + 10).into());
+            context.fill_text(&tournament_match.player_1, x_center.into(), ((y_top + y_center) / 2).into());
+            context.fill_text(&tournament_match.player_2, x_center.into(), ((y_center + y_bottom) / 2).into());
 
             render_tree(left, context);
             render_tree(right, context);
