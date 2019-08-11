@@ -61,3 +61,9 @@ fn tree_boundary_height_double() {
     let height = tree_boundary_height(10, 2);
     assert_eq!(height, 20) 
 }
+
+#[wasm_bindgen_test]
+fn tree_boundary_height_triple() {
+    let height = tree_boundary_height(10, 3);
+    assert_eq!(height, 40) 
+}
