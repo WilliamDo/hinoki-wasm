@@ -193,12 +193,14 @@ fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d
 
             // todo pass in the height and width from elsewhere
             let container_height = 60;
-            let container_width = 80;
+            let container_width = 180;
 
             let y_center = (y_top + y_bottom) / 2;
             let x_center = x_left + width / 2;
 
             context.stroke_rect((x_center - container_width / 2).into(), (y_center - container_height / 2).into(), container_width.into(), container_height.into());
+
+            context.set_text_align("center");
 
             context.fill_text(&tournament_match.player_1, x_center.into(), y_center.into());
             context.fill_text(&tournament_match.player_2, x_center.into(), (y_center + 10).into());
