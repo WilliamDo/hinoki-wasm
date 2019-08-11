@@ -4,6 +4,7 @@ use std::f64;
 use std::cmp;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
+use wasm_bindgen::JsValue;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -50,6 +51,8 @@ pub fn draw_something(canvas_id: &str) {
                 tournament_match: TournamentMatch {
                     player_1: "Timo Boll".to_string(),
                     player_2: "Jun Mizutani".to_string(),
+                    score_1: 4,
+                    score_2: 3,
                 },         
             }),
             right: Box::new(TournamentTree::Node {
@@ -58,11 +61,15 @@ pub fn draw_something(canvas_id: &str) {
                 tournament_match: TournamentMatch {
                     player_1: "Zhang Jike".to_string(),
                     player_2: "Ma Lin".to_string(),
+                    score_1: 4,
+                    score_2: 1,
                 },         
             }),
             tournament_match: TournamentMatch {
                 player_1: "Timo Boll".to_string(),
                 player_2: "Zhang Jike".to_string(),
+                score_1: 4,
+                score_2: 0,
             },                   
         }),
         right: Box::new(TournamentTree::Node {
@@ -72,6 +79,8 @@ pub fn draw_something(canvas_id: &str) {
                 tournament_match: TournamentMatch {
                     player_1: "Koki Niwa".to_string(),
                     player_2: "Xu Xin".to_string(),
+                    score_1: 4,
+                    score_2: 3,
                 },         
             }),
             right: Box::new(TournamentTree::Node {
@@ -80,16 +89,22 @@ pub fn draw_something(canvas_id: &str) {
                 tournament_match: TournamentMatch {
                     player_1: "Simon Gauzy".to_string(),
                     player_2: "Ma Long".to_string(),
+                    score_1: 2,
+                    score_2: 4,
                 },                     
             }),
             tournament_match: TournamentMatch {
                 player_1: "Koki Niwa".to_string(),
                 player_2: "Ma Long".to_string(),
+                score_1: 1,
+                score_2: 4,
             },                     
         }),
         tournament_match: TournamentMatch {
             player_1: "Timo Boll".to_string(),
             player_2: "Ma Long".to_string(),
+            score_1: 4,
+            score_2: 3,
         },         
     };
 
@@ -130,6 +145,8 @@ fn draw_tree(context: web_sys::CanvasRenderingContext2d, levels: u32) {
 pub struct TournamentMatch {
     player_1: String,
     player_2: String,
+    score_1: u32,
+    score_2: u32
 }
 
 pub enum TournamentTree {
@@ -195,7 +212,7 @@ fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d
     match root {
         RenderingTree::Empty => {},
         RenderingTree::Node { left, right, y_top, y_bottom, x_left, width, tournament_match } => {
-            context.stroke_rect(*x_left as f64, *y_top as f64, *width as f64, (y_bottom - y_top) as f64);
+            // context.stroke_rect(*x_left as f64, *y_top as f64, *width as f64, (y_bottom - y_top) as f64);
 
             // todo pass in the height and width from elsewhere
             let container_height = 60;
@@ -204,13 +221,29 @@ fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d
             let y_center = (y_top + y_bottom) / 2;
             let x_center = x_left + width / 2;
 
+            let y_top_player_1 = y_center - (container_height / 2);
+            let y_top_player_2 = y_center;
+            context.set_fill_style(&JsValue::from_str("green"));
+            context.fill_rect(*x_left as f64, y_top_player_1.into(), *width as f64, (container_height / 2).into());
+            context.set_fill_style(&JsValue::from_str("yellow"));
+            context.fill_rect(*x_left as f64, y_top_player_2.into(), *width as f64, (container_height / 2).into());
+
             //context.stroke_rect((x_center - container_width / 2).into(), (y_center - container_height / 2).into(), container_width.into(), container_height.into());
+
+            context.set_fill_style(&JsValue::from_str("black"));
+            context.set_text_align("left");
+            context.set_text_baseline("middle");
+            context.fill_text(&tournament_match.player_1, *x_left as f64, (y_top_player_1 + container_height / 4).into());
+            context.fill_text(&tournament_match.player_2, *x_left as f64, (y_top_player_2 + container_height / 4).into());
+
+
 
             context.set_text_align("center");
             context.set_text_baseline("middle");
-
-            context.fill_text(&tournament_match.player_1, x_center.into(), ((y_top + y_center) / 2).into());
-            context.fill_text(&tournament_match.player_2, x_center.into(), ((y_center + y_bottom) / 2).into());
+            let score_section_width = 15;
+            context.fill_text(&tournament_match.score_1.to_string(), (x_left + width - score_section_width).into(), (y_top_player_1 + container_height / 4).into());
+            context.fill_text(&tournament_match.score_2.to_string(), (x_left + width - score_section_width).into(), (y_top_player_2 + container_height / 4).into());
+            
 
             render_tree(left, context);
             render_tree(right, context);
