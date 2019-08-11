@@ -207,8 +207,9 @@ fn render_tree(root: &RenderingTree, context: &web_sys::CanvasRenderingContext2d
             context.stroke_rect((x_center - container_width / 2).into(), (y_center - container_height / 2).into(), container_width.into(), container_height.into());
 
             context.set_text_align("center");
+            context.set_text_baseline("middle");
 
-            context.fill_text(&tournament_match.player_1, x_center.into(), y_center.into());
+            context.fill_text(&tournament_match.player_1, x_center.into(), (y_center - 10).into());
             context.fill_text(&tournament_match.player_2, x_center.into(), (y_center + 10).into());
 
             render_tree(left, context);
