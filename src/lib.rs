@@ -40,7 +40,7 @@ pub fn draw_something(canvas_id: &str) {
     // draw_tree(context, 4);
 
     let base_width = 200;
-    let base_height = 100;
+    let base_height = 120;
 
     let tournament_tree = &TournamentTree::Node {
         left: Box::new(TournamentTree::Node {
@@ -93,8 +93,10 @@ pub fn draw_something(canvas_id: &str) {
         },         
     };
 
-    let boundary_height = depth_of_tree(&tournament_tree) * base_height;
-    let rendering_tree = to_rendering_tree(&tournament_tree, 0, boundary_height, 0, base_width);
+    let tree_depth = depth_of_tree(&tournament_tree);
+    let boundary_height = tree_boundary_height(base_height, tree_depth);
+    let boundary_width = tree_boundary_width(base_width, tree_depth);
+    let rendering_tree = to_rendering_tree(&tournament_tree, 0, boundary_height, boundary_width - base_width, base_width);
     render_tree(&rendering_tree, &context);
 
 }
@@ -154,6 +156,10 @@ pub fn tree_boundary_height(base_height: u32, tree_depth: u32) -> u32 {
     2u32.pow(tree_depth - 1) * base_height
 }
 
+pub fn tree_boundary_width(base_width: u32, tree_depth: u32) -> u32 {
+    base_width * tree_depth
+}
+
 pub enum RenderingTree {
     Empty,
     Node { 
@@ -172,8 +178,8 @@ fn to_rendering_tree(root: &TournamentTree, y_top: u32, y_bottom: u32, x_left: u
         TournamentTree::Empty => RenderingTree::Empty,
         TournamentTree::Node { left, right, tournament_match } => {
             RenderingTree::Node {
-                left: Box::new(to_rendering_tree(left, y_top, (y_top + y_bottom) / 2, x_left + width, width)),
-                right: Box::new(to_rendering_tree(right, (y_top + y_bottom) / 2, y_bottom, x_left + width, width)),
+                left: Box::new(to_rendering_tree(left, y_top, (y_top + y_bottom) / 2, x_left - width, width)),
+                right: Box::new(to_rendering_tree(right, (y_top + y_bottom) / 2, y_bottom, x_left - width, width)),
                 y_top: y_top,
                 y_bottom: y_bottom,
                 x_left: x_left,
